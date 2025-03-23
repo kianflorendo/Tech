@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, Reorder } from "framer-motion";
+import { motion, Reorder, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { AlertCircle, CheckCircle2, Clock, RotateCcw } from "lucide-react";
+import { AlertCircle, Clock, RotateCcw, Info, Award } from "lucide-react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 // Wire color definitions
 type WireStandard = "T568A" | "T568B";
@@ -162,10 +163,17 @@ export default function RJ45Game() {
   const [standard, setStandard] = useState<WireStandard>("T568A");
   const [wires, setWires] = useState<Wire[]>([]);
   const [correctWires, setCorrectWires] = useState<Wire[]>([]);
-  const [timeLeft, setTimeLeft] = useState(20); // Changed to 20 seconds
+  const [timeLeft, setTimeLeft] = useState(20);
   const [showCorrectPattern, setShowCorrectPattern] = useState(true);
+  const [showInfo, setShowInfo] = useState(false);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const gameContainerRef = useRef<HTMLDivElement>(null);
+
+  // Check if screen is mobile
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isTablet = useMediaQuery("(max-width: 1024px)");
+  const isLargeScreen = useMediaQuery("(min-width: 768px)");
 
   // Select a standard and start the game
   const selectStandard = (selected: WireStandard) => {
@@ -188,7 +196,7 @@ export default function RJ45Game() {
 
   // Start the 20-second timer for arranging wires
   const startArrangeTimer = () => {
-    setTimeLeft(20); // Changed to 20 seconds
+    setTimeLeft(20);
 
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -265,7 +273,7 @@ export default function RJ45Game() {
         {index + 1}
       </div>
       <div
-        className={`h-16 w-8 rounded-md flex items-center justify-center relative ${wire.bgClass} border border-slate-300 shadow-sm`}
+        className={`h-12 sm:h-16 w-6 sm:w-8 rounded-md flex items-center justify-center relative ${wire.bgClass} border border-slate-300 shadow-sm`}
       >
         {wire.stripeClass && (
           <div
@@ -288,16 +296,44 @@ export default function RJ45Game() {
   return (
     <div
       ref={gameContainerRef}
-      className="flex flex-col items-center justify-center p-4 md:p-8 space-y-8 bg-gradient-to-br from-cyan-50 via-sky-50 to-blue-50 rounded-xl shadow-md relative"
+      className="flex flex-col items-center justify-center p-4 md:p-8 space-y-6 bg-gradient-to-br from-cyan-50 via-sky-50 to-blue-50 rounded-xl shadow-md relative"
     >
-      <div className="text-center space-y-4 max-w-md mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold text-cyan-700 tracking-tight">
-          RJ45 Wiring Challenge
-        </h1>
+      <div className="text-center space-y-3 max-w-md mx-auto">
+        <div className="flex items-center justify-center gap-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-cyan-700 tracking-tight">
+            RJ45 Wiring Challenge
+          </h1>
+          <button
+            onClick={() => setShowInfo(!showInfo)}
+            className="text-cyan-600 hover:text-cyan-800 transition-colors"
+            aria-label="Show information about RJ45 wiring"
+          >
+            <Info size={20} />
+          </button>
+        </div>
+
+        <AnimatePresence>
+          {showInfo && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="bg-white/80 backdrop-blur-sm p-3 rounded-lg shadow-sm text-sm text-slate-700">
+                <p>
+                  RJ45 connectors use specific color patterns for network
+                  cables. T568A and T568B are the two standard wiring patterns
+                  used in Ethernet cables.
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {gameState === "select" && (
           <div className="bg-white/70 backdrop-blur-sm p-4 rounded-lg shadow-sm">
-            <p className="text-slate-700 text-lg">
+            <p className="text-slate-700 text-base sm:text-lg">
               Select a wiring standard to begin. You'll need to memorize the
               pattern, then arrange the wires correctly in 20 seconds.
             </p>
@@ -307,7 +343,7 @@ export default function RJ45Game() {
         {gameState === "learn" && (
           <div className="flex items-center justify-center space-x-2 text-emerald-600 bg-emerald-50 p-3 rounded-lg shadow-sm">
             <AlertCircle size={20} />
-            <p className="font-medium text-lg">
+            <p className="font-medium text-base sm:text-lg">
               Memorize this pattern! Jumbling in 5 seconds...
             </p>
           </div>
@@ -316,7 +352,7 @@ export default function RJ45Game() {
         {gameState === "arrange" && (
           <div className="flex items-center justify-center space-x-2 text-amber-600 bg-amber-50 p-3 rounded-lg shadow-sm">
             <Clock size={20} />
-            <p className="font-medium text-lg">
+            <p className="font-medium text-base sm:text-lg">
               Arrange the wires correctly! Time left: {timeLeft}s
             </p>
           </div>
@@ -324,15 +360,19 @@ export default function RJ45Game() {
 
         {gameState === "success" && (
           <div className="flex items-center justify-center space-x-2 text-emerald-600 bg-emerald-50 p-3 rounded-lg shadow-sm">
-            <CheckCircle2 size={20} />
-            <p className="font-medium text-lg">Perfect wiring! You win!</p>
+            <Award size={20} />
+            <p className="font-medium text-base sm:text-lg">
+              Perfect wiring! You win!
+            </p>
           </div>
         )}
 
         {gameState === "failure" && (
           <div className="flex items-center justify-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg shadow-sm">
             <AlertCircle size={20} />
-            <p className="font-medium text-lg">Incorrect wiring! Try again.</p>
+            <p className="font-medium text-base sm:text-lg">
+              Incorrect wiring! Try again.
+            </p>
           </div>
         )}
       </div>
@@ -345,18 +385,18 @@ export default function RJ45Game() {
                 className="overflow-hidden border-2 border-cyan-200 hover:border-cyan-400 transition-all duration-200 cursor-pointer"
                 onClick={() => selectStandard("T568A")}
               >
-                <div className="bg-gradient-to-r from-cyan-50 to-blue-50 p-6">
+                <div className="bg-gradient-to-r from-cyan-50 to-blue-50 p-4 sm:p-6">
                   <div className="text-center mb-4">
-                    <span className="text-xl font-bold text-cyan-700 bg-white px-3 py-1 rounded-full shadow-sm">
+                    <span className="text-lg sm:text-xl font-bold text-cyan-700 bg-white px-3 py-1 rounded-full shadow-sm">
                       T568A
                     </span>
                   </div>
                   <div className="bg-white rounded-lg p-3 shadow-sm">
-                    <div className="flex justify-center gap-2">
+                    <div className="flex justify-center gap-1 sm:gap-2">
                       {WIRE_STANDARDS["T568A"].map((wire, i) => (
                         <div
                           key={i}
-                          className={`h-16 w-8 ${wire.bgClass} border border-slate-300 rounded-sm`}
+                          className={`h-12 sm:h-16 w-6 sm:w-8 ${wire.bgClass} border border-slate-300 rounded-sm`}
                           style={{
                             backgroundImage: wire.stripeClass
                               ? `repeating-linear-gradient(45deg, transparent, transparent 2px, ${wire.stripeClass.replace(
@@ -371,11 +411,11 @@ export default function RJ45Game() {
                         ></div>
                       ))}
                     </div>
-                    <div className="flex justify-center gap-2 mt-2">
+                    <div className="flex justify-center gap-1 sm:gap-2 mt-2">
                       {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
                         <div
                           key={num}
-                          className="text-center text-xs font-medium text-slate-500 w-8"
+                          className="text-center text-xs font-medium text-slate-500 w-6 sm:w-8"
                         >
                           {num}
                         </div>
@@ -391,18 +431,18 @@ export default function RJ45Game() {
                 className="overflow-hidden border-2 border-blue-200 hover:border-blue-400 transition-all duration-200 cursor-pointer"
                 onClick={() => selectStandard("T568B")}
               >
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6">
                   <div className="text-center mb-4">
-                    <span className="text-xl font-bold text-blue-700 bg-white px-3 py-1 rounded-full shadow-sm">
+                    <span className="text-lg sm:text-xl font-bold text-blue-700 bg-white px-3 py-1 rounded-full shadow-sm">
                       T568B
                     </span>
                   </div>
                   <div className="bg-white rounded-lg p-3 shadow-sm">
-                    <div className="flex justify-center gap-2">
+                    <div className="flex justify-center gap-1 sm:gap-2">
                       {WIRE_STANDARDS["T568B"].map((wire, i) => (
                         <div
                           key={i}
-                          className={`h-16 w-8 ${wire.bgClass} border border-slate-300 rounded-sm`}
+                          className={`h-12 sm:h-16 w-6 sm:w-8 ${wire.bgClass} border border-slate-300 rounded-sm`}
                           style={{
                             backgroundImage: wire.stripeClass
                               ? `repeating-linear-gradient(45deg, transparent, transparent 2px, ${wire.stripeClass.replace(
@@ -417,11 +457,11 @@ export default function RJ45Game() {
                         ></div>
                       ))}
                     </div>
-                    <div className="flex justify-center gap-2 mt-2">
+                    <div className="flex justify-center gap-1 sm:gap-2 mt-2">
                       {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
                         <div
                           key={num}
-                          className="text-center text-xs font-medium text-slate-500 w-8"
+                          className="text-center text-xs font-medium text-slate-500 w-6 sm:w-8"
                         >
                           {num}
                         </div>
@@ -443,7 +483,7 @@ export default function RJ45Game() {
               </span>
               Standard Pattern
             </h3>
-            <div className="flex justify-center gap-4 p-4">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-4 p-2 sm:p-4">
               {correctWires.map((wire, index) => renderWire(wire, index))}
             </div>
           </Card>
@@ -455,13 +495,17 @@ export default function RJ45Game() {
               Arrange the wires in the correct order
             </h3>
 
-            {/* Horizontal wire arrangement */}
+            {/* Responsive wire arrangement - vertical on mobile, horizontal on larger screens */}
             <div className="flex flex-col items-center">
               <Reorder.Group
-                axis="x"
+                axis={isMobile ? "y" : "x"}
                 values={wires}
                 onReorder={setWires}
-                className="flex gap-2 p-4 bg-slate-50 rounded-lg min-h-[120px] w-full justify-center"
+                className={`${
+                  isMobile
+                    ? "flex flex-col gap-2"
+                    : "flex flex-row gap-2 justify-center overflow-x-auto"
+                } p-4 bg-slate-50 rounded-lg min-h-[120px] w-full`}
               >
                 {wires.map((wire, index) => (
                   <Reorder.Item
@@ -469,12 +513,22 @@ export default function RJ45Game() {
                     value={wire}
                     className="cursor-grab active:cursor-grabbing"
                   >
-                    <div className="flex flex-col items-center p-2 bg-white rounded-md hover:bg-slate-100 border border-slate-200 shadow-sm">
-                      <div className="text-center text-slate-500 font-medium mb-1">
+                    <motion.div
+                      className={`flex ${
+                        isMobile
+                          ? "flex-row items-center"
+                          : "flex-col items-center"
+                      } p-2 bg-white rounded-md hover:bg-slate-100 border border-slate-200 shadow-sm ${
+                        isLargeScreen ? "min-w-[80px]" : ""
+                      }`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="text-center text-slate-500 font-medium mb-1 mx-2">
                         {index + 1}
                       </div>
                       <div
-                        className={`h-16 w-8 rounded-md flex items-center justify-center relative ${wire.bgClass} border border-slate-300`}
+                        className={`h-12 sm:h-16 w-6 sm:w-8 rounded-md flex items-center justify-center relative ${wire.bgClass} border border-slate-300`}
                       >
                         {wire.stripeClass && (
                           <div
@@ -488,11 +542,17 @@ export default function RJ45Game() {
                           ></div>
                         )}
                       </div>
-                      <div className="text-xs font-medium text-slate-700 bg-white px-2 py-1 rounded mt-1 shadow-sm whitespace-nowrap">
+                      <div className="text-xs font-medium text-slate-700 bg-white px-2 py-1 rounded mx-2 my-1 shadow-sm whitespace-nowrap">
                         {wire.name}
                       </div>
-                      <div className="text-slate-400 mt-1">⋮⋮</div>
-                    </div>
+                      <div
+                        className={`text-slate-400 ${
+                          isMobile ? "ml-auto" : "mt-1"
+                        }`}
+                      >
+                        {isMobile ? "⋮⋮" : "≡"}
+                      </div>
+                    </motion.div>
                   </Reorder.Item>
                 ))}
               </Reorder.Group>
@@ -501,7 +561,7 @@ export default function RJ45Game() {
             <div className="mt-6 flex justify-center">
               <Button
                 onClick={checkArrangement}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white shadow-md text-lg px-6 py-2"
+                className="bg-cyan-600 hover:bg-cyan-700 text-white shadow-md text-base sm:text-lg px-4 sm:px-6 py-2"
               >
                 Check Wiring
               </Button>

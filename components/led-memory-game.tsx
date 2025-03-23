@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Brain, RotateCcw, AlertCircle } from "lucide-react";
+import { Brain, RotateCcw, AlertCircle, Info, Lightbulb } from "lucide-react";
 
 type GameState = "idle" | "showing" | "guessing" | "gameover" | "success";
 type LED = 1 | 2 | 3 | 4 | 5 | 6;
@@ -37,6 +37,7 @@ export default function LEDMemoryGame() {
   const [sequence, setSequence] = useState<LED[]>([]);
   const [playerSequence, setPlayerSequence] = useState<LED[]>([]);
   const [activeLED, setActiveLED] = useState<LED | null>(null);
+  const [showInfo, setShowInfo] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -85,8 +86,8 @@ export default function LEDMemoryGame() {
           timeoutRef.current = setTimeout(() => {
             step++;
             playStep();
-          }, 500); // Shorter delay between LEDs to make it harder
-        }, 1000); // Shorter display time to make it harder
+          }, 400); // Longer delay between LEDs to make it easier
+        }, 800); // Longer display time to make it easier
       } else {
         // Sequence finished, player's turn
         setActiveLED(null);
@@ -120,9 +121,7 @@ export default function LEDMemoryGame() {
       // Wrong input, game over
       setGameState("gameover");
 
-      // Update best score
       const currentScore = newPlayerSequence.length - 1;
-
       toast(
         `Game Over! You remembered ${currentScore} out of ${PATTERN_LENGTH} correctly.`,
         {
@@ -156,11 +155,38 @@ export default function LEDMemoryGame() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 space-y-8 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 rounded-xl shadow-md">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold text-amber-600">
-          Memory LED Challenge
-        </h1>
+    <div className="flex flex-col items-center justify-center p-4 space-y-6 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 rounded-xl shadow-md">
+      <div className="text-center space-y-3">
+        <div className="flex items-center justify-center gap-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-600">
+            Memory LED Challenge
+          </h1>
+          <button
+            onClick={() => setShowInfo(!showInfo)}
+            className="text-amber-600 hover:text-amber-800 transition-colors"
+            aria-label="Show information about LED Memory Challenge"
+          >
+            <Info size={20} />
+          </button>
+        </div>
+
+        <AnimatePresence>
+          {showInfo && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="bg-white/80 backdrop-blur-sm p-3 rounded-lg shadow-sm text-sm text-slate-700">
+                <p>
+                  Watch the sequence of 10 LED lights and repeat it from memory.
+                  How many can you remember?
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3 shadow-sm">
           <div className="flex justify-center text-slate-700 font-medium">
@@ -181,13 +207,13 @@ export default function LEDMemoryGame() {
                 Repeat the pattern! ({playerSequence.length}/{PATTERN_LENGTH})
               </p>
             )}
-            {gameState === "gameover" && "Game Over!"}
-            {gameState === "success" && "Perfect memory!"}
+            {gameState === "gameover" && "Game Over! Try again?"}
+            {gameState === "success" && "Perfect memory! Try again?"}
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 sm:gap-6 p-6 rounded-xl bg-white/80 backdrop-blur-sm shadow-md">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-6 p-4 sm:p-6 rounded-xl bg-white/80 backdrop-blur-sm shadow-md">
         {[1, 2, 3, 4, 5, 6].map((led) => (
           <motion.div
             key={led}
@@ -195,7 +221,7 @@ export default function LEDMemoryGame() {
             whileTap={{ scale: gameState === "guessing" ? 0.95 : 1 }}
           >
             <Card
-              className={`relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full cursor-pointer flex items-center justify-center border-4 transition-all duration-200 ${
+              className={`relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full cursor-pointer flex items-center justify-center border-4 transition-all duration-200 ${
                 activeLED === led
                   ? `${LED_COLORS[led as LED]} shadow-lg border-white`
                   : `${LED_INACTIVE_COLORS[led as LED]}`
@@ -210,12 +236,18 @@ export default function LEDMemoryGame() {
                 }`}
               />
               <span
-                className={`text-2xl sm:text-3xl font-bold ${
+                className={`text-xl sm:text-2xl md:text-3xl font-bold ${
                   activeLED === led ? "text-white" : "text-slate-700"
                 }`}
               >
                 {led}
               </span>
+              {gameState === "guessing" && (
+                <Lightbulb
+                  size={16}
+                  className="absolute bottom-2 right-2 text-slate-500 opacity-70"
+                />
+              )}
             </Card>
           </motion.div>
         ))}
