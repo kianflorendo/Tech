@@ -5,7 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Brain, RotateCcw, AlertCircle, Info, Lightbulb } from "lucide-react";
+import {
+  Brain,
+  RotateCcw,
+  AlertCircle,
+  Info,
+  Lightbulb,
+  Clock,
+} from "lucide-react";
 
 type GameState = "idle" | "showing" | "guessing" | "gameover" | "success";
 type LED = 1 | 2 | 3 | 4 | 5 | 6;
@@ -38,15 +45,17 @@ export default function LEDMemoryGame() {
   const [playerSequence, setPlayerSequence] = useState<LED[]>([]);
   const [activeLED, setActiveLED] = useState<LED | null>(null);
   const [showInfo, setShowInfo] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(20);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Generate a random LED number (1-6)
   const getRandomLED = (): LED => {
     return (Math.floor(Math.random() * 6) + 1) as LED;
   };
 
-  // Generate a full sequence of 10 patterns
+  // Generate a full sequence of 6 patterns
   const generateFullSequence = (): LED[] => {
     const newSequence: LED[] = [];
     for (let i = 0; i < PATTERN_LENGTH; i++) {
@@ -54,6 +63,33 @@ export default function LEDMemoryGame() {
     }
     return newSequence;
   };
+
+  // Start the 20-second timer for guessing
+  const startGuessingTimer = useCallback(() => {
+    setTimeLeft(20);
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current!);
+          // Time's up - game over
+          setGameState("gameover");
+          toast(
+            `Time's up! You remembered ${playerSequence.length} out of ${PATTERN_LENGTH} correctly.`,
+            {
+              className: "bg-amber-100 text-amber-800 border-amber-200",
+            }
+          );
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, [playerSequence.length]);
 
   // Start a new game
   const startGame = useCallback(() => {
@@ -65,40 +101,44 @@ export default function LEDMemoryGame() {
   }, []);
 
   // Show the sequence to the player
-  const showSequence = useCallback((currentSequence: LED[]) => {
-    let step = 0;
+  const showSequence = useCallback(
+    (currentSequence: LED[]) => {
+      let step = 0;
 
-    // Clear any existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    const playStep = () => {
-      if (step < currentSequence.length) {
-        // Light up the LED
-        setActiveLED(currentSequence[step]);
-
-        // Turn off after a delay
-        timeoutRef.current = setTimeout(() => {
-          setActiveLED(null);
-
-          // Wait before showing the next LED
-          timeoutRef.current = setTimeout(() => {
-            step++;
-            playStep();
-          }, 400); // Longer delay between LEDs to make it easier
-        }, 800); // Longer display time to make it easier
-      } else {
-        // Sequence finished, player's turn
-        setActiveLED(null);
-        setGameState("guessing");
-        setPlayerSequence([]);
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
-    };
 
-    // Start playing the sequence after a short delay
-    timeoutRef.current = setTimeout(playStep, 1000);
-  }, []);
+      const playStep = () => {
+        if (step < currentSequence.length) {
+          // Light up the LED
+          setActiveLED(currentSequence[step]);
+
+          // Turn off after a delay
+          timeoutRef.current = setTimeout(() => {
+            setActiveLED(null);
+
+            // Wait before showing the next LED
+            timeoutRef.current = setTimeout(() => {
+              step++;
+              playStep();
+            }, 400); // Longer delay between LEDs to make it easier
+          }, 800); // Longer display time to make it easier
+        } else {
+          // Sequence finished, player's turn
+          setActiveLED(null);
+          setGameState("guessing");
+          setPlayerSequence([]);
+          startGuessingTimer(); // Start the 20-second timer
+        }
+      };
+
+      // Start playing the sequence after a short delay
+      timeoutRef.current = setTimeout(playStep, 1000);
+    },
+    [startGuessingTimer]
+  );
 
   // Handle player clicking an LED
   const handleLEDClick = (led: LED) => {
@@ -119,6 +159,9 @@ export default function LEDMemoryGame() {
 
     if (!isCorrectSoFar) {
       // Wrong input, game over
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
       setGameState("gameover");
 
       const currentScore = newPlayerSequence.length - 1;
@@ -134,6 +177,9 @@ export default function LEDMemoryGame() {
     // Check if the player completed the full sequence
     if (newPlayerSequence.length === sequence.length) {
       // Correct sequence!
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
       setGameState("success");
 
       toast(
@@ -145,14 +191,29 @@ export default function LEDMemoryGame() {
     }
   };
 
-  // Clean up timeouts when component unmounts
+  // Clean up timeouts when component unmounts or game resets
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     };
   }, []);
+
+  // Reset game and clear timers
+  const resetGame = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    setGameState("idle");
+    setTimeLeft(20);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center p-4 space-y-6 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 rounded-xl shadow-md">
@@ -180,8 +241,8 @@ export default function LEDMemoryGame() {
             >
               <div className="bg-white/80 backdrop-blur-sm p-3 rounded-lg shadow-sm text-sm text-slate-700">
                 <p>
-                  Watch the sequence of 10 LED lights and repeat it from memory.
-                  How many can you remember?
+                  Watch the sequence of 6 LED lights and repeat it from memory
+                  within 20 seconds.
                 </p>
               </div>
             </motion.div>
@@ -203,9 +264,13 @@ export default function LEDMemoryGame() {
               </div>
             )}
             {gameState === "guessing" && (
-              <p>
-                Repeat the pattern! ({playerSequence.length}/{PATTERN_LENGTH})
-              </p>
+              <div className="flex items-center gap-2">
+                <Clock size={18} className="text-amber-600" />
+                <p>
+                  Repeat the pattern! ({playerSequence.length}/{PATTERN_LENGTH})
+                  - Time: {timeLeft}s
+                </p>
+              </div>
             )}
             {gameState === "gameover" && "Game Over! Try again?"}
             {gameState === "success" && "Perfect memory! Try again?"}
