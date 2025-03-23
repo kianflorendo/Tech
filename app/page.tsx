@@ -104,7 +104,7 @@ export default function GameHub() {
                     </p>
                     <Button
                       onClick={() => navigateTo("tech-tac-toe")}
-                      className="w-full bg-sky-600 hover:bg-sky-700 text-white shadow-sm"
+                      className="w-full bg-sky-600 hover:bg-sky-700 text-white shadow-sm cursor-pointer"
                     >
                       Play Tech Tac Toe
                     </Button>
@@ -133,7 +133,7 @@ export default function GameHub() {
                     </p>
                     <Button
                       onClick={() => navigateTo("led-memory")}
-                      className="w-full bg-amber-500 hover:bg-amber-600 text-white shadow-sm"
+                      className="w-full bg-amber-500 hover:bg-amber-600 text-white shadow-sm cursor-pointer"
                     >
                       Play LED Memory
                     </Button>
@@ -162,7 +162,7 @@ export default function GameHub() {
                     </p>
                     <Button
                       onClick={() => navigateTo("rj45-game")}
-                      className="w-full bg-cyan-600 hover:bg-cyan-700 text-white shadow-sm"
+                      className="w-full bg-cyan-600 hover:bg-cyan-700 text-white shadow-sm cursor-pointer"
                     >
                       Play RJ45 Game
                     </Button>
