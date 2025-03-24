@@ -138,7 +138,7 @@ export const WIRE_STANDARDS: Record<WireStandard, Wire[]> = {
 
 // Render a wire for the correct pattern display
 export const renderWire = (wire: Wire, index: number) => (
-  <div className="flex flex-col items-center">
+  <div key={wire.id} className="flex flex-col items-center">
     <div className="text-center text-slate-500 font-medium mb-1">
       {index + 1}
     </div>
