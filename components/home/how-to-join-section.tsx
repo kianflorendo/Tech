@@ -20,19 +20,19 @@ export default function HowToJoinSection() {
       name: "Facebook",
       icon: <Facebook size={24} className="text-blue-600" />,
       color: "bg-blue-100 text-blue-600 border-blue-200",
-      url: "/placeholder.svg?height=200&width=200",
+      url: "/qr-codes/facebook.png",
     },
     {
       name: "Instagram",
       icon: <Instagram size={24} className="text-pink-600" />,
       color: "bg-pink-100 text-pink-600 border-pink-200",
-      url: "/placeholder.svg?height=200&width=200",
+      url: "/qr-codes/instagram.png",
     },
     {
       name: "LinkedIn",
       icon: <Linkedin size={24} className="text-blue-700" />,
       color: "bg-blue-100 text-blue-700 border-blue-200",
-      url: "/placeholder.svg?height=200&width=200",
+      url: "/qr-codes/linked-in.png",
     },
   ];
 
