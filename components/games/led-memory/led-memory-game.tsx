@@ -159,17 +159,17 @@ export default function LEDMemoryGame() {
     };
   }, []);
 
-  // Reset game and clear timers
-  const resetGame = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    setGameState("idle");
-    setTimeLeft(20);
-  };
+  // // Reset game and clear timers
+  // const resetGame = () => {
+  //   if (timeoutRef.current) {
+  //     clearTimeout(timeoutRef.current);
+  //   }
+  //   if (timerRef.current) {
+  //     clearInterval(timerRef.current);
+  //   }
+  //   setGameState("idle");
+  //   setTimeLeft(20);
+  // };
 
   return (
     <div className="flex flex-col items-center justify-center p-4 space-y-6 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 rounded-xl shadow-md">

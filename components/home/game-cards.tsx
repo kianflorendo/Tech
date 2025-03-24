@@ -16,10 +16,14 @@ export default function GameCards({ navigateTo }: GameCardsProps) {
       {/* Memory LED Challenge Card */}
       <motion.div
         whileHover={{ y: -5 }}
-        transition={{ type: "spring", stiffness: 300 }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          duration: 0.3,
+          delay: 0.1,
+        }} // Combined transition
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
       >
         <Card className="overflow-hidden border-2 border-amber-200 shadow-md h-full">
           <div className="bg-gradient-to-r from-amber-100 to-rose-100 p-6 h-full flex flex-col">
@@ -48,10 +52,14 @@ export default function GameCards({ navigateTo }: GameCardsProps) {
       {/* Tech Tac Toe Card */}
       <motion.div
         whileHover={{ y: -5 }}
-        transition={{ type: "spring", stiffness: 300 }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          duration: 0.3,
+          delay: 0.1,
+        }} // Combined transition
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
       >
         <Card className="overflow-hidden border-2 border-sky-200 shadow-md h-full">
           <div className="bg-gradient-to-r from-sky-100 to-indigo-100 p-6 h-full flex flex-col">
@@ -80,10 +88,14 @@ export default function GameCards({ navigateTo }: GameCardsProps) {
       {/* RJ45 Wiring Game Card */}
       <motion.div
         whileHover={{ y: -5 }}
-        transition={{ type: "spring", stiffness: 300 }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          duration: 0.3,
+          delay: 0.1,
+        }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.3 }}
       >
         <Card className="overflow-hidden border-2 border-cyan-200 shadow-md h-full">
           <div className="bg-gradient-to-r from-cyan-100 to-blue-100 p-6 h-full flex flex-col">

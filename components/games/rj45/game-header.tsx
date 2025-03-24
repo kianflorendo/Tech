@@ -2,11 +2,10 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertCircle, Clock, Award, Info } from "lucide-react";
-import type { RJ45GameState, WireStandard } from "@/lib/types";
+import type { RJ45GameState } from "@/lib/types";
 
 type GameHeaderProps = {
   gameState: RJ45GameState;
-  standard: WireStandard;
   timeLeft: number;
   timeExpired: boolean;
   showInfo: boolean;
@@ -15,7 +14,6 @@ type GameHeaderProps = {
 
 export default function GameHeader({
   gameState,
-  standard,
   timeLeft,
   timeExpired,
   showInfo,
@@ -96,7 +94,7 @@ export default function GameHeader({
           <AlertCircle size={20} />
           <p className="font-medium text-base sm:text-lg">
             {timeExpired
-              ? "Time's up! Incorrect wiring."
+              ? "Time&apos;s up! Incorrect wiring."
               : "Incorrect wiring! Try again."}
           </p>
         </div>

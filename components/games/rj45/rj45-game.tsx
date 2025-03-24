@@ -159,7 +159,6 @@ export default function RJ45Game() {
     >
       <GameHeader
         gameState={gameState}
-        standard={standard}
         timeLeft={timeLeft}
         timeExpired={timeExpired}
         showInfo={showInfo}
