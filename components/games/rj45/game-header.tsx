@@ -25,7 +25,7 @@ export default function GameHeader({
     <div className="text-center space-y-3 max-w-md mx-auto">
       <div className="flex items-center justify-center gap-2">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-cyan-700 tracking-tight">
-          RJ45 Wiring Challenge
+          Connect Me Not: Ethernet Color Coding Game
         </h1>
         <button
           onClick={() => setShowInfo(!showInfo)}

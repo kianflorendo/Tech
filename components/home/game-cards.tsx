@@ -29,7 +29,7 @@ export default function GameCards({ navigateTo }: GameCardsProps) {
               </div>
             </div>
             <h2 className="text-2xl font-bold text-amber-600 text-center mb-2">
-              Memory LED Challenge
+              Memory Heist: Guess the Pattern of Lights
             </h2>
             <p className="text-slate-600 text-center mb-6 flex-grow">
               Test your memory by repeating a sequence of 6 LED patterns in the
@@ -93,7 +93,7 @@ export default function GameCards({ navigateTo }: GameCardsProps) {
               </div>
             </div>
             <h2 className="text-2xl font-bold text-cyan-700 text-center mb-2">
-              RJ45 Wiring Challenge
+              Connect Me Not: Ethernet Color Coding Game
             </h2>
             <p className="text-slate-600 text-center mb-6 flex-grow">
               Arrange T568A/B wires correctly within 15 seconds to test your
