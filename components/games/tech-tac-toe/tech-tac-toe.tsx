@@ -9,9 +9,7 @@ import { checkWinner } from "@/lib/game-utils/tech-tac-toe-utils";
 import { getBestMove } from "@/lib/game-utils/tech-tac-toe-ai";
 import GameHeader from "@/components/games/tech-tac-toe/game-header";
 import GameBoard from "@/components/games/tech-tac-toe/game-board";
-import LeaderboardPanel from "@/components/games/leaderboard/leaderboard-panel";
 import GameModeSelector from "@/components/games/tech-tac-toe/game-mode-selector";
-import PlayerNameDialog from "@/components/games/tech-tac-toe/player-name-dialog";
 
 type GameMode = "pvp" | "pve";
 type Difficulty = "easy" | "medium" | "hard";
@@ -29,40 +27,9 @@ export default function TechTacToe() {
   const [isAIThinking, setIsAIThinking] = useState(false);
   const [previousGameMode, setPreviousGameMode] = useState<GameMode | null>(null);
 
-  // Leaderboard & Streak State
+  // Streak State (Local only)
   const [p1Streak, setP1Streak] = useState(0);
   const [p0Streak, setP0Streak] = useState(0);
-  const [lastWinScore, setLastWinScore] = useState(0);
-  const [showNameDialog, setShowNameDialog] = useState(false);
-  const [winnerPlayer, setWinnerPlayer] = useState<Player | null>(null);
-  const [leaderboardKey, setLeaderboardKey] = useState(0); // For refreshing leaderboard
-
-  const handleSubmitName = useCallback(async (name: string, scoreOverride?: number) => {
-    try {
-      const score = scoreOverride !== undefined ? scoreOverride : lastWinScore;
-      const response = await fetch("/api/leaderboard", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          gameId: "tech-tac-toe",
-          name,
-          score,
-        }),
-      });
-
-      if (response.ok) {
-        toast.success("Score saved to leaderboard!");
-        setLeaderboardKey((prev) => prev + 1); // Refresh leaderboard
-      } else {
-        toast.error("Failed to save score.");
-      }
-    } catch (error) {
-      console.error("Error submitting score:", error);
-      toast.error("An error occurred while saving your score.");
-    } finally {
-      setShowNameDialog(false);
-    }
-  }, [lastWinScore]);
 
   const handleCellClick = useCallback(
     (index: number, isAutoMove = false) => {
@@ -88,7 +55,6 @@ export default function TechTacToe() {
           });
           setP1Streak(0);
           setP0Streak(0);
-          setLastWinScore(0);
         } else {
           const winnerLabel = newWinner === "1" ? "1" : gameMode === "pve" ? "AI" : "2";
           
@@ -96,26 +62,12 @@ export default function TechTacToe() {
             className: "bg-zinc-900 text-white border-zinc-800",
           });
 
-          let currentWinnerStreak = 1;
           if (newWinner === "1") {
-            currentWinnerStreak = p1Streak + 1;
-            setP1Streak(currentWinnerStreak);
+            setP1Streak(prev => prev + 1);
             setP0Streak(0); // Reset opponent streak
           } else {
-            currentWinnerStreak = p0Streak + 1;
-            setP0Streak(currentWinnerStreak);
+            setP0Streak(prev => prev + 1);
             setP1Streak(0); // Reset opponent streak
-          }
-
-          setLastWinScore(currentWinnerStreak);
-          setWinnerPlayer(newWinner);
-
-          // Show name dialog if a human won (or any win in PvP)
-          if (gameMode === "pvp" || (gameMode === "pve" && newWinner === "1")) {
-            setShowNameDialog(true);
-          } else if (gameMode === "pve" && newWinner === "0") {
-            // Auto-submit AI win without dialog
-            handleSubmitName(`AI (${difficulty.toUpperCase()})`, currentWinnerStreak);
           }
         }
       } else {
@@ -123,7 +75,7 @@ export default function TechTacToe() {
         setCurrentPlayer(currentPlayer === "1" ? "0" : "1");
       }
     },
-    [board, winner, isAIThinking, gameMode, currentPlayer, p1Streak, p0Streak, difficulty, handleSubmitName]
+    [board, winner, isAIThinking, gameMode, currentPlayer, p1Streak, p0Streak, difficulty]
   );
 
   // AI Turn Logic
@@ -159,9 +111,6 @@ export default function TechTacToe() {
     setWinner(null);
     setWinningPattern(null);
     setIsAIThinking(false);
-    setLastWinScore(0);
-    setShowNameDialog(false);
-    setWinnerPlayer(null);
   };
 
   const handleChangeMode = () => {
@@ -204,27 +153,6 @@ export default function TechTacToe() {
         onClose={handleCloseModeSelector}
       />
 
-      <PlayerNameDialog
-        open={showNameDialog}
-        score={lastWinScore}
-        onSubmit={handleSubmitName}
-        onCancel={() => setShowNameDialog(false)}
-        title={
-          gameMode === "pve"
-            ? "Victory! 🏆"
-            : winnerPlayer === "1"
-            ? "Player 1 Wins! 🎉"
-            : "Player 2 Wins! 🎉"
-        }
-        playerLabel={
-          gameMode === "pvp"
-            ? winnerPlayer === "1"
-              ? "Player 1"
-              : "Player 2"
-            : undefined
-        }
-      />
-
       <GameHeader
         winner={winner}
         currentPlayer={currentPlayer}
@@ -240,11 +168,6 @@ export default function TechTacToe() {
         board={board}
         winningPattern={winningPattern}
         handleCellClick={handleCellClick}
-      />
-
-      <LeaderboardPanel 
-        gameId="tech-tac-toe" 
-        leaderboardKey={leaderboardKey}
       />
 
       <div className="flex gap-3 w-full max-w-sm px-4 pb-2">
