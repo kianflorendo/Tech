@@ -7,13 +7,32 @@ import { kv } from "@vercel/kv";
  */
 const LEADERBOARD_KEY = "leaderboard:tech-tac-toe";
 
+interface Entry {
+  name: string;
+  score: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+interface Game {
+  metric: string;
+  order: string;
+  entries: Entry[];
+}
+
+interface Leaderboard {
+  version: number;
+  generatedAt?: string;
+  games: Record<string, Game>;
+}
+
 export async function GET() {
   try {
     // Attempt to fetch leaderboard from KV
-    const leaderboard: any = await kv.get(LEADERBOARD_KEY);
+    const leaderboard = await kv.get<Leaderboard>(LEADERBOARD_KEY);
     
     // Default structure if database is empty
-    const defaultStructure = {
+    const defaultStructure: Leaderboard = {
       version: 1,
       generatedAt: new Date().toISOString(),
       games: {
@@ -46,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Fetch current state
-    let leaderboard: any = await kv.get(LEADERBOARD_KEY);
+    let leaderboard = await kv.get<Leaderboard>(LEADERBOARD_KEY);
     
     // 2. Initialize if null
     if (!leaderboard) {
@@ -73,10 +92,10 @@ export async function POST(request: NextRequest) {
 
     const entries = leaderboard.games[gameId].entries;
     const existingIndex = entries.findIndex(
-      (entry: any) => entry.name.toUpperCase() === name.toUpperCase()
+      (entry) => entry.name.toUpperCase() === name.toUpperCase()
     );
 
-    let savedEntry;
+    let savedEntry: Entry;
     if (existingIndex !== -1) {
       // Accumulate score for returning player
       entries[existingIndex].score += score;
@@ -94,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     // 3. Sort by score descending and keep top 20
     leaderboard.games[gameId].entries = entries
-      .sort((a: any, b: any) => b.score - a.score)
+      .sort((a, b) => b.score - a.score)
       .slice(0, 20);
     
     leaderboard.generatedAt = new Date().toISOString();

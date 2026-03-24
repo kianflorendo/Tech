@@ -37,6 +37,33 @@ export default function TechTacToe() {
   const [winnerPlayer, setWinnerPlayer] = useState<Player | null>(null);
   const [leaderboardKey, setLeaderboardKey] = useState(0); // For refreshing leaderboard
 
+  const handleSubmitName = useCallback(async (name: string, scoreOverride?: number) => {
+    try {
+      const score = scoreOverride !== undefined ? scoreOverride : lastWinScore;
+      const response = await fetch("/api/leaderboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          gameId: "tech-tac-toe",
+          name,
+          score,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Score saved to leaderboard!");
+        setLeaderboardKey((prev) => prev + 1); // Refresh leaderboard
+      } else {
+        toast.error("Failed to save score.");
+      }
+    } catch (error) {
+      console.error("Error submitting score:", error);
+      toast.error("An error occurred while saving your score.");
+    } finally {
+      setShowNameDialog(false);
+    }
+  }, [lastWinScore]);
+
   const handleCellClick = useCallback(
     (index: number, isAutoMove = false) => {
       // Ignore click if cell is already filled, game is over, or AI is thinking (unless it's an auto-move)
@@ -96,7 +123,7 @@ export default function TechTacToe() {
         setCurrentPlayer(currentPlayer === "1" ? "0" : "1");
       }
     },
-    [board, winner, isAIThinking, gameMode, currentPlayer, p1Streak, p0Streak, difficulty]
+    [board, winner, isAIThinking, gameMode, currentPlayer, p1Streak, p0Streak, difficulty, handleSubmitName]
   );
 
   // AI Turn Logic
@@ -165,33 +192,6 @@ export default function TechTacToe() {
     }
     setGameMode(mode);
     setDifficulty(diff);
-  };
-
-  const handleSubmitName = async (name: string, scoreOverride?: number) => {
-    try {
-      const score = scoreOverride !== undefined ? scoreOverride : lastWinScore;
-      const response = await fetch("/api/leaderboard", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          gameId: "tech-tac-toe",
-          name,
-          score,
-        }),
-      });
-
-      if (response.ok) {
-        toast.success("Score saved to leaderboard!");
-        setLeaderboardKey((prev) => prev + 1); // Refresh leaderboard
-      } else {
-        toast.error("Failed to save score.");
-      }
-    } catch (error) {
-      console.error("Error submitting score:", error);
-      toast.error("An error occurred while saving your score.");
-    } finally {
-      setShowNameDialog(false);
-    }
   };
 
   return (

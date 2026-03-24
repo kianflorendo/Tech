@@ -126,7 +126,7 @@ export default function GameHeader({
           ) : (
             <span className="flex items-center justify-center gap-2 text-zinc-300">
               <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-              {getPlayerLabel(currentPlayer)}'s Turn
+              {getPlayerLabel(currentPlayer)}&apos;s Turn
             </span>
           )}
         </div>

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { User, Trophy } from "lucide-react";
+import { Trophy } from "lucide-react";
 
 interface PlayerNameDialogProps {
   open: boolean;

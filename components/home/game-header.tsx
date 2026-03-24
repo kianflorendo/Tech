@@ -1,7 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
-
 export default function GameHeader() {
   return (
     <div className="flex flex-col items-center justify-center text-center mb-12 mt-8">

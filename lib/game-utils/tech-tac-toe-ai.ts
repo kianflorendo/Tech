@@ -89,7 +89,7 @@ function minimax(
   humanPlayer: Player,
   maxDepth: number
 ): number {
-  const winner = evaluateBoard(board, aiPlayer, humanPlayer);
+  const winner = evaluateBoard(board);
   
   // Terminal state or max depth reached
   if (winner !== null || depth >= maxDepth) {
@@ -146,9 +146,7 @@ function minimax(
 }
 
 function evaluateBoard(
-  board: BoardState,
-  aiPlayer: Player,
-  humanPlayer: Player
+  board: BoardState
 ): Player | "draw" | null {
   for (const pattern of WIN_PATTERNS) {
     const [a, b, c] = pattern;
