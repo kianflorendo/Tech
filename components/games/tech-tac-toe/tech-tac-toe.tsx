@@ -75,7 +75,7 @@ export default function TechTacToe() {
         setCurrentPlayer(currentPlayer === "1" ? "0" : "1");
       }
     },
-    [board, winner, isAIThinking, gameMode, currentPlayer, p1Streak, p0Streak, difficulty]
+    [board, winner, isAIThinking, gameMode, currentPlayer]
   );
 
   // AI Turn Logic
