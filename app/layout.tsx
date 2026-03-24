@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
+import { Geist } from "next/font/google";
 import "./globals.css";
+
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
 
 export const metadata: Metadata = {
   title: "Sparky Tech Tac Toe",
@@ -10,15 +16,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`${geist.variable} dark`}>
       <head>
         <link rel="icon" href="/icon1.png" type="image/png" sizes="32x32" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"
-          rel="stylesheet"
-        />
       </head>
-      <body className="antialiased bg-black text-white">{children}</body>
+      <body className="antialiased bg-black text-white font-sans">{children}</body>
     </html>
   );
 }
