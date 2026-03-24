@@ -1,11 +1,15 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 export default function GameHeader() {
   return (
-    <div className="text-center mb-8">
-      <h1 className="text-4xl sm:text-5xl font-bold text-sky-700 mb-4">
-        Circuit Carnival
+    <div className="flex flex-col items-center justify-center text-center mb-12 mt-8">
+      <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-white mb-4 tracking-tight">
+        Sparky <span className="text-sky-500">Tech Tac Toe</span>
       </h1>
-      <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-        Choose a game to play from our collection of tech-themed challenges
+      <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto font-medium">
+        A binary twist on the classic game with 1s and 0s instead of Xs and Os
       </p>
     </div>
   );

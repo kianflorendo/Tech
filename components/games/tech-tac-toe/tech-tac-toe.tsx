@@ -57,7 +57,7 @@ export default function TechTacToe() {
 
         if (newWinner === "draw") {
           toast("It's a draw! 🤝", {
-            className: "bg-sky-100 text-sky-800 border-sky-200",
+            className: "bg-zinc-900 text-white border-zinc-800",
           });
           setP1Streak(0);
           setP0Streak(0);
@@ -66,7 +66,7 @@ export default function TechTacToe() {
           const winnerLabel = newWinner === "1" ? "1" : gameMode === "pve" ? "AI" : "2";
           
           toast(`Player ${winnerLabel} wins! 🎉`, {
-            className: "bg-sky-100 text-sky-800 border-sky-200",
+            className: "bg-zinc-900 text-white border-zinc-800",
           });
 
           let currentWinnerStreak = 1;
@@ -195,7 +195,9 @@ export default function TechTacToe() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 space-y-6 bg-gradient-to-br from-sky-100 via-indigo-50 to-blue-100 rounded-xl shadow-md">
+    <div className="flex flex-col items-center justify-center p-4 space-y-8 bg-zinc-950/50 backdrop-blur-xl border border-zinc-900 rounded-3xl shadow-2xl overflow-hidden relative">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-sky-500 to-transparent opacity-50" />
+      
       <GameModeSelector
         open={gameMode === null}
         onSelect={handleModeSelect}
@@ -209,7 +211,7 @@ export default function TechTacToe() {
         onCancel={() => setShowNameDialog(false)}
         title={
           gameMode === "pve"
-            ? "You Win! 🏆"
+            ? "Victory! 🏆"
             : winnerPlayer === "1"
             ? "Player 1 Wins! 🎉"
             : "Player 2 Wins! 🎉"
@@ -245,23 +247,20 @@ export default function TechTacToe() {
         leaderboardKey={leaderboardKey}
       />
 
-      <div className="flex gap-2">
+      <div className="flex gap-3 w-full max-w-sm px-4 pb-2">
         <Button
           onClick={resetBoard}
-          variant="outline"
-          size="lg"
-          className="bg-white border-sky-200 hover:bg-sky-50 hover:border-sky-300 text-sky-700 shadow-sm flex items-center gap-2"
+          className="flex-1 bg-white hover:bg-zinc-200 text-black font-bold py-6 rounded-xl shadow-lg transition-all"
         >
-          <RotateCcw size={16} />
+          <RotateCcw className="mr-2" size={18} />
           Play Again
         </Button>
         <Button
           onClick={handleChangeMode}
           variant="ghost"
-          size="lg"
-          className="text-sky-600 hover:bg-sky-50"
+          className="flex-1 text-zinc-400 hover:text-white hover:bg-zinc-900 border border-zinc-900 font-semibold rounded-xl"
         >
-          Change Mode
+          Settings
         </Button>
       </div>
     </div>

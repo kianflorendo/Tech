@@ -6,29 +6,20 @@ import type { GameType } from "@/lib/types";
 
 type BackToHomeButtonProps = {
   navigateTo: (game: GameType) => void;
-  variant: "sky" | "amber" | "cyan";
+  variant?: "sky" | "amber" | "cyan";
 };
 
 export default function BackToHomeButton({
   navigateTo,
-  variant,
 }: BackToHomeButtonProps) {
-  const variantStyles = {
-    sky: "bg-sky-50 border-sky-200 hover:bg-sky-100 text-sky-700",
-    amber: "bg-amber-50 border-amber-200 hover:bg-amber-100 text-amber-700",
-    cyan: "bg-cyan-50 border-cyan-200 hover:bg-cyan-100 text-cyan-700",
-  };
-
   return (
-    <div className="mb-6">
-      <Button
-        onClick={() => navigateTo("home")}
-        variant="outline"
-        className={`${variantStyles[variant]} flex items-center gap-2 shadow-sm`}
-      >
-        <ArrowLeft size={16} />
-        Back to Games
-      </Button>
-    </div>
+    <Button
+      onClick={() => navigateTo("home")}
+      variant="ghost"
+      className="mb-6 text-zinc-400 hover:text-white hover:bg-zinc-900 flex items-center gap-2 px-0 hover:px-4 transition-all group"
+    >
+      <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+      <span className="font-bold uppercase tracking-widest text-xs">Back to Hub</span>
+    </Button>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
   DialogContent,
@@ -42,90 +43,119 @@ export default function GameModeSelector({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md bg-white border-sky-100">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-sky-900 text-center">
-            Choose Game Mode
-          </DialogTitle>
-          <DialogDescription className="text-center text-sky-600">
-            Select how you want to play Tech Tac Toe
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-md bg-zinc-950 border border-zinc-800 shadow-2xl rounded-3xl overflow-hidden p-0">
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-sky-500 to-transparent opacity-30" />
+        
+        <div className="p-8">
+          <DialogHeader className="mb-8 items-center text-center sm:text-center">
+            <DialogTitle className="text-3xl font-black text-white tracking-tight">
+              Select <span className="text-sky-400">Mode</span>
+            </DialogTitle>
+            <DialogDescription className="text-zinc-400 font-medium pt-2">
+              Choose how you want to play Sparky Tech Tac Toe
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="grid grid-cols-2 gap-4 py-4">
-          <button
-            onClick={() => setMode("pvp")}
-            className={cn(
-              "flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all space-y-3",
-              mode === "pvp"
-                ? "border-sky-500 bg-sky-50 text-sky-700 shadow-md"
-                : "border-slate-100 bg-slate-50 text-slate-500 hover:border-sky-200 hover:bg-sky-25"
-            )}
-          >
-            <div
+          <div className="grid grid-cols-2 gap-4 py-2">
+            <button
+              type="button"
+              onClick={() => setMode("pvp")}
               className={cn(
-                "p-3 rounded-full",
-                mode === "pvp" ? "bg-sky-500 text-white" : "bg-slate-200"
+                "flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all duration-300 space-y-3 group relative overflow-hidden",
+                mode === "pvp"
+                  ? "border-sky-500 bg-sky-500/10 text-white shadow-[0_0_20px_rgba(14,165,233,0.15)] scale-[1.02]"
+                  : "border-zinc-800 bg-zinc-900/50 text-zinc-500 hover:border-zinc-700 hover:bg-zinc-800/50"
               )}
             >
-              <User size={32} />
-            </div>
-            <span className="font-bold">Player vs Player</span>
-          </button>
+              <div
+                className={cn(
+                  "p-4 rounded-xl transition-all duration-300",
+                  mode === "pvp" ? "bg-sky-500 text-black shadow-lg rotate-0" : "bg-zinc-800 group-hover:bg-zinc-700 -rotate-3"
+                )}
+              >
+                <User size={32} strokeWidth={2.5} />
+              </div>
+              <span className="font-black text-sm tracking-widest uppercase">Vs Player</span>
+              {mode === "pvp" && (
+                <motion.div 
+                  layoutId="mode-indicator"
+                  className="absolute bottom-0 left-0 w-full h-1 bg-sky-500"
+                />
+              )}
+            </button>
 
-          <button
-            onClick={() => setMode("pve")}
-            className={cn(
-              "flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all space-y-3",
-              mode === "pve"
-                ? "border-sky-500 bg-sky-50 text-sky-700 shadow-md"
-                : "border-slate-100 bg-slate-50 text-slate-500 hover:border-sky-200 hover:bg-sky-25"
-            )}
-          >
-            <div
+            <button
+              type="button"
+              onClick={() => setMode("pve")}
               className={cn(
-                "p-3 rounded-full",
-                mode === "pve" ? "bg-sky-500 text-white" : "bg-slate-200"
+                "flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all duration-300 space-y-3 group relative overflow-hidden",
+                mode === "pve"
+                  ? "border-sky-500 bg-sky-500/10 text-white shadow-[0_0_20px_rgba(14,165,233,0.15)] scale-[1.02]"
+                  : "border-zinc-800 bg-zinc-900/50 text-zinc-500 hover:border-zinc-700 hover:bg-zinc-800/50"
               )}
             >
-              <Cpu size={32} />
-            </div>
-            <span className="font-bold">Player vs AI</span>
-          </button>
-        </div>
-
-        {mode === "pve" && (
-          <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-            <p className="text-sm font-medium text-sky-800 text-center">
-              Select Difficulty
-            </p>
-            <div className="flex justify-center gap-2">
-              {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
-                <button
-                  key={d}
-                  onClick={() => setDifficulty(d)}
-                  className={cn(
-                    "px-4 py-2 rounded-full text-sm font-semibold capitalize transition-all",
-                    difficulty === d
-                      ? "bg-sky-600 text-white shadow-sm"
-                      : "bg-sky-50 text-sky-600 hover:bg-sky-100"
-                  )}
-                >
-                  {d}
-                </button>
-              ))}
-            </div>
+              <div
+                className={cn(
+                  "p-4 rounded-xl transition-all duration-300",
+                  mode === "pve" ? "bg-sky-500 text-black shadow-lg rotate-0" : "bg-zinc-800 group-hover:bg-zinc-700 rotate-3"
+                )}
+              >
+                <Cpu size={32} strokeWidth={2.5} />
+              </div>
+              <span className="font-black text-sm tracking-widest uppercase">Vs Sparky</span>
+              {mode === "pve" && (
+                <motion.div 
+                  layoutId="mode-indicator"
+                  className="absolute bottom-0 left-0 w-full h-1 bg-sky-500"
+                />
+              )}
+            </button>
           </div>
-        )}
 
-        <DialogFooter className="mt-4">
-          <Button
-            onClick={handleStart}
-            className="w-full bg-sky-600 hover:bg-sky-700 text-white py-6 text-lg font-bold rounded-xl shadow-lg hover:shadow-sky-200 transition-all"
-          >
-            Start Game
-          </Button>
-        </DialogFooter>
+          <AnimatePresence initial={false}>
+            {mode === "pve" && (
+              <motion.div 
+                key="difficulty-section"
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: "auto", marginTop: 32 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden space-y-4"
+              >
+                <p className="text-xs font-black text-zinc-500 text-center uppercase tracking-[0.2em]">
+                  Select Difficulty
+                </p>
+                <div className="flex justify-center gap-2">
+                  {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
+                    <button
+                      key={d}
+                      type="button"
+                      onClick={() => setDifficulty(d)}
+                      className={cn(
+                        "flex-1 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-200 border-2",
+                        difficulty === d
+                          ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                          : "bg-zinc-900 text-zinc-500 border-zinc-800 hover:border-zinc-700 hover:text-zinc-300"
+                      )}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <DialogFooter className="mt-10">
+            <Button
+              onClick={handleStart}
+              className="w-full bg-sky-500 hover:bg-sky-400 text-black py-7 text-xl font-black rounded-2xl shadow-[0_8px_30px_rgba(14,165,233,0.3)] hover:shadow-[0_12px_40px_rgba(14,165,233,0.4)] transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              INITIALIZE GAME
+            </Button>
+          </DialogFooter>
+
+        </div>
       </DialogContent>
     </Dialog>
   );

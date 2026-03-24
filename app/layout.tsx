@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ICpEP Booth Games",
-  description: "This is a collection of games for the ICpEP booth.",
+  title: "Sparky Tech Tac Toe",
+  description: "A binary twist on the classic game with 1s and 0s.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <link rel="icon" href="/icon1.png" type="image/png" sizes="32x32" />
         <link
@@ -18,7 +18,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased bg-black text-white">{children}</body>
     </html>
   );
 }

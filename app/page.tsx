@@ -7,13 +7,9 @@ import { Home } from "lucide-react";
 
 // Game components
 import TechTacToe from "@/components/games/tech-tac-toe/tech-tac-toe";
-import LEDMemoryGame from "@/components/games/led-memory/led-memory-game";
-import RJ45Game from "@/components/games/rj45/rj45-game";
 
 // Home page components
 import GameHeader from "@/components/home/game-header";
-import HowToJoinSection from "@/components/home/how-to-join-section";
-import GameMechanicsSection from "@/components/home/game-mechanics-section";
 import GameCards from "@/components/home/game-cards";
 import BackToHomeButton from "@/components/home/back-to-home-button";
 
@@ -37,28 +33,10 @@ export default function GameHub() {
             <TechTacToe />
           </div>
         );
-      case "led-memory":
-        return (
-          <div className="w-full max-w-4xl mx-auto">
-            <BackToHomeButton navigateTo={navigateTo} variant="amber" />
-            <LEDMemoryGame />
-          </div>
-        );
-      case "rj45-game":
-        return (
-          <div className="w-full max-w-4xl mx-auto">
-            <BackToHomeButton navigateTo={navigateTo} variant="cyan" />
-            <RJ45Game />
-          </div>
-        );
       default:
         return (
           <div className="max-w-5xl mx-auto">
             <GameHeader />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-              <HowToJoinSection />
-              <GameMechanicsSection />
-            </div>
             <GameCards navigateTo={navigateTo} />
           </div>
         );
@@ -66,7 +44,9 @@ export default function GameHub() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50 p-4 md:p-8">
+    <div className="min-h-screen bg-black text-white p-4 md:p-8 selection:bg-sky-500/30">
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(14,165,233,0.1),transparent_70%)] pointer-events-none" />
+      
       <AnimatePresence mode="wait">
         <motion.div
           key={currentGame}
@@ -74,20 +54,21 @@ export default function GameHub() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
+          className="relative z-10"
         >
           {renderContent()}
         </motion.div>
       </AnimatePresence>
 
       {currentGame !== "home" && (
-        <div className="fixed bottom-4 right-4">
+        <div className="fixed bottom-6 right-6 z-50">
           <Button
             onClick={() => navigateTo("home")}
             size="icon"
-            className="rounded-full bg-white text-sky-600 hover:bg-sky-50 shadow-md"
+            className="rounded-full bg-zinc-900 border border-zinc-800 text-sky-400 hover:bg-zinc-800 hover:border-sky-500 shadow-2xl w-14 h-14 transition-all"
             aria-label="Return to home"
           >
-            <Home size={20} />
+            <Home size={28} />
           </Button>
         </div>
       )}

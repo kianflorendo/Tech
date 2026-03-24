@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Trophy, Medal } from "lucide-react";
 
 type LeaderboardEntry = {
   name: string;
@@ -46,7 +47,6 @@ export default function LeaderboardPanel({
         setLoading(true);
         setError(null);
 
-        // Fetch from the API instead of static JSON to ensure we get the latest data
         const res = await fetch(`/api/leaderboard?cb=${Date.now()}`, {
           signal: controller.signal,
           cache: "no-store",
@@ -90,53 +90,74 @@ export default function LeaderboardPanel({
     <Card
       className={
         className ??
-        "w-full max-w-2xl bg-white/80 backdrop-blur-sm border-slate-200"
+        "w-full max-w-md bg-zinc-900/50 backdrop-blur-md border-zinc-800 shadow-2xl overflow-hidden rounded-2xl"
       }
     >
-      <div className="p-5 sm:p-6 space-y-3">
+      <div className="p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-            Leaderboard
+          <h2 className="text-xl font-black text-white flex items-center gap-2">
+            <Trophy size={20} className="text-amber-400" />
+            Hall of Fame
           </h2>
           {game?.metric && (
-            <span className="text-sm text-slate-500">{game.metric}</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+              {game.metric}
+            </span>
           )}
         </div>
 
         {loading && (
-          <p className="text-sm text-slate-600">Loading leaderboard…</p>
+          <div className="flex items-center justify-center py-8">
+            <div className="w-6 h-6 border-2 border-sky-500/20 border-t-sky-500 rounded-full animate-spin" />
+          </div>
         )}
 
         {!loading && error && (
-          <p className="text-sm text-rose-700">{error}</p>
+          <p className="text-sm text-rose-400 py-4 text-center bg-rose-500/5 rounded-lg border border-rose-500/10">
+            {error}
+          </p>
         )}
 
         {!loading && !error && !game && (
-          <p className="text-sm text-slate-600">
-            No leaderboard data found for this game.
+          <p className="text-sm text-zinc-500 py-4 text-center">
+            No entries found.
           </p>
         )}
 
         {!loading && !error && game && entries.length === 0 && (
-          <p className="text-sm text-slate-600">No entries yet.</p>
+          <p className="text-sm text-zinc-500 py-4 text-center">
+            Be the first to claim a spot!
+          </p>
         )}
 
         {!loading && !error && game && entries.length > 0 && (
-          <ol className="space-y-2">
+          <div className="space-y-2">
             {entries.map((entry, index) => (
-              <li
+              <div
                 key={`${entry.name}-${entry.createdAt}-${index}`}
-                className="flex items-center justify-between text-base text-slate-700"
+                className="flex items-center justify-between p-3 rounded-xl bg-zinc-800/30 border border-zinc-800 transition-colors hover:bg-zinc-800/50 group"
               >
-                <span className="font-medium">
-                  {index + 1}. {entry.name}
-                </span>
-                <span className="tabular-nums text-slate-800">
-                  {entry.score}
-                </span>
-              </li>
+                <div className="flex items-center gap-3">
+                  <span className={`w-6 h-6 flex items-center justify-center rounded-full text-xs font-black ${
+                    index === 0 ? "bg-amber-500 text-black" : 
+                    index === 1 ? "bg-zinc-300 text-black" : 
+                    index === 2 ? "bg-amber-700 text-white" : "bg-zinc-800 text-zinc-400"
+                  }`}>
+                    {index + 1}
+                  </span>
+                  <span className="font-bold text-zinc-200 group-hover:text-white transition-colors">
+                    {entry.name}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="tabular-nums text-lg font-black text-sky-400">
+                    {entry.score}
+                  </span>
+                  {index === 0 && <Medal size={14} className="text-amber-400" />}
+                </div>
+              </div>
             ))}
-          </ol>
+          </div>
         )}
       </div>
     </Card>
